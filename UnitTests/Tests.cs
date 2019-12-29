@@ -3019,8 +3019,8 @@ public class tests
         d.Add(2, new List<double> { 4.4, 5.5, 6.6 });
         var s = JSON.ToJSON(d, new JSONParameters { UseExtensions = false });
 
-        var o = JSON.ToObject<Dictionary<int, List<double>>>(s, new JSONParameters { AutoConvertStringToNumbers = true});
-        
+        var o = JSON.ToObject<Dictionary<int, List<double>>>(s, new JSONParameters { AutoConvertStringToNumbers = true });
+
         Assert.AreEqual(2, o.Count);
         Assert.AreEqual(1.1, o[1][0]);
     }
@@ -3048,7 +3048,7 @@ public class tests
     [Test]
     public static void numberchecks()
     {
-        var s = "{'a':+1234567}".Replace("'","\"");
+        var s = "{'a':+1234567}".Replace("'", "\"");
         var o = JSON.ToObject<nt>(s);
         Assert.AreEqual(1234567L, o.a);
 
@@ -3068,14 +3068,131 @@ public class tests
     {
         var o = new rofield();
 
-        var s = JSON.ToJSON(o, new JSONParameters { ShowReadOnlyProperties = false});
+        var s = JSON.ToJSON(o, new JSONParameters { ShowReadOnlyProperties = false });
         Console.WriteLine(s);
         Assert.False(s.Contains("age"));
-        
+
         s = JSON.ToJSON(o, new JSONParameters { ShowReadOnlyProperties = true });
         Console.WriteLine(s);
         Assert.True(s.Contains("age"));
     }
+
+    [Test]
+    public static void intarr()
+    {
+        var o = JSON.ToObject<int[]>("[1,2,-3]");
+        Assert.AreEqual(o[2], -3);
+    }
+
+
+    public class Circle
+    {
+        public Point Center { get; set; }
+        public int Radius { get; set; }
+    }
+
+    public class Point
+    {
+        public int X { get; set; }
+        public int Y { get; set; }
+
+        public Point() { X = Y = 0; }
+
+        public Point(int x, int y)
+        {
+            X = x;
+            Y = y;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is Point p) return p.X == X && p.Y == Y;
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return X + Y;//.GetHashCode() * 23 + Y.GetHashCode() * 17;
+        }
+    }
+
+    [Test]
+    public static void refchecking1()
+    {
+        var p = new Point(0, 1);
+        var circles = new Circle[]
+        {
+            new Circle() { Center = new Point(0, 0), Radius = 1 },
+            new Circle() { Center = p, Radius = 2 },
+            new Circle() { Center = p, Radius = 3 }
+        };
+        var jp = new JSONParameters { OverrideObjectHashCodeChecking = true };
+        var json = JSON.ToNiceJSON(circles);//, jp);
+        Console.WriteLine(json);
+        var oc = JSON.ToObject<Circle[]>(json, jp);
+        Assert.AreEqual(3, oc.Length);
+        Assert.AreEqual(oc[2].Center.Y, 1);
+    }
+    [Test]
+    public static void refchecking2()
+    {
+        var circles = new Circle[]
+        {
+            new Circle() { Center = new Point(0, 0), Radius = 1 },
+            new Circle() { Center = new Point(0, 1), Radius = 2 },
+            new Circle() { Center = new Point(0, 1), Radius = 3 }
+        };
+        var jp = new JSONParameters { OverrideObjectHashCodeChecking = true, InlineCircularReferences = true };
+
+        var json = JSON.ToNiceJSON(circles, jp);
+        Console.WriteLine(json);
+        var oc = JSON.ToObject<Circle[]>(json, jp);
+        Assert.AreEqual(3, oc.Length);
+        Assert.AreEqual(oc[2].Center.Y, 1);
+    }
+
+    [Test]
+    public static void HackTest()
+    {
+        //        var s = @"{'$type':'System.Configuration.Install.AssemblyInstaller,System.Configuration.Install, Version=4.0.0.0,culture=neutral,PublicKeyToken=b03f5f7f11d50a3a',
+        //'Path':'file:///"
+        //.Replace("\'", "\"") + typeof(JSON).Assembly.Location.Replace("\\","/") + "\"}";
+        var s = @"{
+    '$types':{
+        'System.Windows.Data.ObjectDataProvider, PresentationFramework, Version = 4.0.0.0, Culture = neutral, PublicKeyToken = 31bf3856ad364e35':'1',
+        'System.Diagnostics.Process, System, Version = 4.0.0.0, Culture = neutral, PublicKeyToken = b77a5c561934e089':'2',
+        'System.Diagnostics.ProcessStartInfo, System, Version = 4.0.0.0, Culture = neutral, PublicKeyToken = b77a5c561934e089':'3'
+    },
+    '$type':'1',
+    'ObjectInstance':{
+        '$type':'2',
+        'StartInfo':{
+            '$type':'3',
+            'FileName':'cmd',
+            'Arguments':'/c notepad hacked'
+        }
+    },
+    'MethodName':'Start'
+}".Replace("'", "\"");
+
+        var fail = false;
+        try
+        {
+            var o = JSON.ToObject(s, new JSONParameters { BlackListTypeChecking = true });
+            Console.WriteLine(o.GetType().Name);
+            //Assert.AreEqual(o.GetType().Name, "");
+            fail = true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            //Assert.Pass();
+        }
+        if (fail)
+            Assert.Fail();
+    }
+
+
 
     //[Test]
     //public static void autoconvtest()
@@ -3085,4 +3202,5 @@ public class tests
     //}
 
 }// UnitTests.Tests
-//}
+ //}
+

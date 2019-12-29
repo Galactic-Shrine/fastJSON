@@ -1,8 +1,22 @@
+<<<<<<< HEAD
 ﻿// Copyright © 2011-2019 Mehdi Gholam
 using System.Collections.Generic;
+=======
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+>>>>>>> pr/4
 
 namespace fastJSON
 {
+    public class ReferenceEqualityComparer : IEqualityComparer, IEqualityComparer<object>
+    {
+        public static ReferenceEqualityComparer Default { get; } = new ReferenceEqualityComparer();
+
+        public new bool Equals(object x, object y) => x.Equals(y);
+        public int GetHashCode(object obj) => RuntimeHelpers.GetHashCode(obj); 
+    }
+
     public sealed class SafeDictionary<TKey, TValue>
     {
         private readonly object _Padlock = new object();

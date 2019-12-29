@@ -43,6 +43,37 @@ namespace consoletest
         }
     }
 
+    public class Circle
+    {
+        public Point Center { get; set; }
+        public int Radius { get; set; }
+    }
+
+    public class Point
+    {
+        public int X { get; set; }
+        public int Y { get; set; }
+
+        public Point() { X = Y = 0; }
+
+        public Point(int x, int y)
+        {
+            X = x;
+            Y = y;
+        }
+
+        //public override bool Equals(object obj)
+        //{
+        //    if (obj is Point p) return p.X == X && p.Y == Y;
+        //    return false;
+        //}
+
+        //public override int GetHashCode()
+        //{
+        //    return X + Y;
+        //}
+    }
+
     public class Program
     {
         static int count = 1000;
@@ -180,13 +211,46 @@ namespace consoletest
 
         public static void Main(string[] args)
         {
-            var o1 = new rofield();
-            var s = JSON.ToJSON(o1, new JSONParameters { ShowReadOnlyProperties = true });
-            var b = s.Contains("age");
-            var o2 = new rofield();
+//            var str = @"{
+//    '$types':{
+//        'System.Windows.Data.ObjectDataProvider, PresentationFramework, Version = 4.0.0.0, Culture = neutral, PublicKeyToken = 31bf3856ad364e35':'1',
+//        'System.Diagnostics.Process, System, Version = 4.0.0.0, Culture = neutral, PublicKeyToken = b77a5c561934e089':'2',
+//        'System.Diagnostics.ProcessStartInfo, System, Version = 4.0.0.0, Culture = neutral, PublicKeyToken = b77a5c561934e089':'3'
+//    },
+//    '$type':'1',
+//    'ObjectInstance':{
+//        '$type':'2',
+//        'StartInfo':{
+//            '$type':'3',
+//            'FileName':'cmd',
+//            'Arguments':'/c notepad'
+//        }
+//    },
+//    'MethodName':'Start'
+//}".Replace("'","\"");
 
-            s = JSON.ToJSON(o2, new JSONParameters { ShowReadOnlyProperties = false });
-            b = s.Contains("age");
+//            var ooo = JSON.ToObject(str, new JSONParameters { BlackListTypeChecking = false });
+
+
+            var p = new Point(0, 1);
+            var circles = new Circle[]
+            {
+
+                new Circle() { Center = new Point(0, 0), Radius = 1 },
+                new Circle() { Center = p, Radius = 2 },
+                new Circle() { Center = p, Radius = 3 }
+            };
+            var json = JSON.ToNiceJSON(circles);//, new JSONParameters {  UseExtensions = false });
+
+            var oc = JSON.ToObject<Circle[]>(json);
+
+            //var o1 = new rofield();
+            //var s = JSON.ToJSON(o1, new JSONParameters { ShowReadOnlyProperties = true });
+            //var b = s.Contains("age");
+            //var o2 = new rofield();
+
+            //s = JSON.ToJSON(o2, new JSONParameters { ShowReadOnlyProperties = false });
+            //b = s.Contains("age");
             //var d = new Dictionary<int, List<double>>();
             //d.Add(1, new List<double> { 1.1, 2.2, 3.3 });
             //d.Add(2, new List<double> { 4.4, 5.5, 6.6 });

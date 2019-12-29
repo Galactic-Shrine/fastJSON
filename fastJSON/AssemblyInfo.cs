@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // Copyright © 2011-2019 Mehdi Gholam
 using System.Reflection;
 
@@ -9,3 +10,15 @@ using System.Reflection;
 
 [assembly: AssemblyVersion("2.2.5.0")]
 [assembly: AssemblyFileVersion("2.2.5.0")]
+=======
+﻿using System.Reflection;
+
+[assembly: AssemblyTitle("fastJSON")]
+[assembly: AssemblyDescription("smallest fastest polymorphic json serializer")]
+[assembly: AssemblyProduct("fastJSON")]
+[assembly: AssemblyCopyright("2010-2019")]
+
+
+[assembly: AssemblyVersion("2.3.0.0")]
+[assembly: AssemblyFileVersion("2.3.1.0")]
+>>>>>>> pr/4

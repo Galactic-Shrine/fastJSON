@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 // Copyright © 2011-2019 Mehdi Gholam
 using System.Reflection;
 

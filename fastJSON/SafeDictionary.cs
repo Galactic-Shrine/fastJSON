@@ -1,11 +1,8 @@
-<<<<<<< HEAD
 ﻿// Copyright © 2011-2019 Mehdi Gholam
-using System.Collections.Generic;
-=======
+
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
->>>>>>> pr/4
 
 namespace fastJSON
 {
